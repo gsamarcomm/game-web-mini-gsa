@@ -1368,7 +1368,7 @@ class StoreScene3D {
   }
 
   getMinZoom() {
-    return 0.4;
+    return 0.25;
   }
 
   getMaxZoom() {
@@ -1381,10 +1381,10 @@ class StoreScene3D {
   setCameraPreset(presetName) {
     const isMobile = window.innerWidth < 768 || (this.camera && this.camera.aspect < 1.0);
     if (presetName === 'front') {
-      // Sudut tepat di depan fasad toko (90 derajat / Math.PI / 2)
+      // Sudut pas lurus dari depan toko (horizontal / eye-level tepat menghadap fasad, bukan dari atas)
       this.camAngle = Math.PI / 2;
-      this.camElevation = Math.PI / 5.5; // ~32.7 derajat
-      this.zoomLevel = isMobile ? 1.35 : 1.0;
+      this.camElevation = 0.05; // Sudut pas lurus datar (~2.8 derajat, sejajar dengan mata orang berdiri)
+      this.zoomLevel = isMobile ? 1.25 : 0.95;
       this.cameraTarget.set(0, 2.0, 0);
     } else if (presetName === 'counter') {
       // Fokus kasir langsung tembus pintu masuk tanpa terhalang palang atap/signboard toko
@@ -1435,7 +1435,7 @@ class StoreScene3D {
 
       this.camAngle += dx * 0.005;
       // Invert gerakan vertikal (+ dy)
-      this.camElevation = Math.max(0.15, Math.min(Math.PI / 2.2, this.camElevation + dy * 0.004));
+      this.camElevation = Math.max(0.02, Math.min(Math.PI / 2.2, this.camElevation + dy * 0.004));
       this.updateCameraPosition();
 
       this.prevPointerPos = { x: e.clientX, y: e.clientY };
@@ -1453,6 +1453,9 @@ class StoreScene3D {
     }, { passive: false });
 
     // Touch Support (Single finger rotate, two fingers pinch-to-zoom in & out)
+    this.touchStartDist = 0;
+    this.lastTouchDist = 0;
+
     el.addEventListener('touchstart', (e) => {
       if (e.touches.length === 1) {
         this.isDragging = true;
@@ -1461,7 +1464,9 @@ class StoreScene3D {
         this.isDragging = false;
         const dx = e.touches[0].clientX - e.touches[1].clientX;
         const dy = e.touches[0].clientY - e.touches[1].clientY;
-        this.touchStartDist = Math.hypot(dx, dy);
+        const dist = Math.hypot(dx, dy);
+        this.touchStartDist = dist;
+        this.lastTouchDist = dist;
       }
     }, { passive: false });
 
@@ -1472,7 +1477,7 @@ class StoreScene3D {
 
         this.camAngle += dx * 0.007;
         // Invert gerakan vertikal (+ dy)
-        this.camElevation = Math.max(0.15, Math.min(Math.PI / 2.2, this.camElevation + dy * 0.006));
+        this.camElevation = Math.max(0.02, Math.min(Math.PI / 2.2, this.camElevation + dy * 0.006));
         this.updateCameraPosition();
 
         this.prevPointerPos = { x: e.touches[0].clientX, y: e.touches[0].clientY };
@@ -1482,14 +1487,15 @@ class StoreScene3D {
         const dy = e.touches[0].clientY - e.touches[1].clientY;
         const dist = Math.hypot(dx, dy);
 
-        if (this.touchStartDist > 0 && dist > 5) {
-          // Rasio perubahan jarak: cubit (dist mengecil) -> zoom out, renggangkan (dist membesar) -> zoom in
-          const ratio = this.touchStartDist / dist;
-          const newZoom = this.zoomLevel * ratio;
-          this.zoomLevel = Math.max(this.getMinZoom(), Math.min(this.getMaxZoom(), newZoom));
+        if (this.lastTouchDist > 0 && dist > 5) {
+          // distDiff: jika dist bertambah (jari melebar/cubit keluar) -> zoom in (zoomLevel mengecil)
+          // jika dist berkurang (jari mendekat/cubit ke dalam) -> zoom out (zoomLevel membesar)
+          const distDiff = dist - this.lastTouchDist;
+          const zoomFactor = 1 - (distDiff * 0.007);
+          this.zoomLevel = Math.max(this.getMinZoom(), Math.min(this.getMaxZoom(), this.zoomLevel * zoomFactor));
           this.updateCameraPosition();
         }
-        this.touchStartDist = dist;
+        this.lastTouchDist = dist;
       }
     }, { passive: false });
 
@@ -1498,15 +1504,18 @@ class StoreScene3D {
         this.isDragging = true;
         this.prevPointerPos = { x: e.touches[0].clientX, y: e.touches[0].clientY };
         this.touchStartDist = 0;
+        this.lastTouchDist = 0;
       } else if (e.touches.length === 0) {
         this.isDragging = false;
         this.touchStartDist = 0;
+        this.lastTouchDist = 0;
       }
     });
 
     el.addEventListener('touchcancel', () => {
       this.isDragging = false;
       this.touchStartDist = 0;
+      this.lastTouchDist = 0;
     });
   }
 
