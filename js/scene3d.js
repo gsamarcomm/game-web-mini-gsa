@@ -1381,19 +1381,21 @@ class StoreScene3D {
   setCameraPreset(presetName) {
     const isMobile = window.innerWidth < 768 || (this.camera && this.camera.aspect < 1.0);
     if (presetName === 'front') {
-      this.camAngle = Math.PI / 3.4;
-      this.camElevation = Math.PI / 4.0;
-      this.zoomLevel = isMobile ? 1.4 : 1.0;
-      this.cameraTarget.set(0, 1.2, 0.5);
+      // Sudut tepat di depan fasad toko (90 derajat / Math.PI / 2)
+      this.camAngle = Math.PI / 2;
+      this.camElevation = Math.PI / 5.5; // ~32.7 derajat
+      this.zoomLevel = isMobile ? 1.35 : 1.0;
+      this.cameraTarget.set(0, 2.0, 0);
     } else if (presetName === 'counter') {
-      this.camAngle = Math.PI / 3.2;
-      this.camElevation = Math.PI / 4.8;
-      this.zoomLevel = isMobile ? 0.9 : 0.65;
-      this.cameraTarget.set(0, 1.2, 2.0);
+      // Fokus kasir langsung tembus pintu masuk tanpa terhalang palang atap/signboard toko
+      this.camAngle = Math.PI / 2;
+      this.camElevation = Math.PI / 8.0; // ~22.5 derajat (ketinggian pas di bawah palang pintu)
+      this.zoomLevel = isMobile ? 0.62 : 0.45;
+      this.cameraTarget.set(0, 1.4, 1.8);
     } else if (presetName === 'top') {
-      this.camAngle = Math.PI / 3.4;
+      this.camAngle = Math.PI / 2;
       this.camElevation = Math.PI / 2.3;
-      this.zoomLevel = isMobile ? 1.5 : 1.0;
+      this.zoomLevel = isMobile ? 1.5 : 1.1;
       this.cameraTarget.set(0, 1.0, 0);
     }
     this.updateCameraPosition();
@@ -1432,7 +1434,8 @@ class StoreScene3D {
       const dy = e.clientY - this.prevPointerPos.y;
 
       this.camAngle += dx * 0.005;
-      this.camElevation = Math.max(0.15, Math.min(Math.PI / 2.2, this.camElevation - dy * 0.004));
+      // Invert gerakan vertikal (+ dy)
+      this.camElevation = Math.max(0.15, Math.min(Math.PI / 2.2, this.camElevation + dy * 0.004));
       this.updateCameraPosition();
 
       this.prevPointerPos = { x: e.clientX, y: e.clientY };
@@ -1449,18 +1452,18 @@ class StoreScene3D {
       else this.zoomIn();
     }, { passive: false });
 
-    // Touch Support (Single finger rotate, two fingers pinch-to-zoom)
+    // Touch Support (Single finger rotate, two fingers pinch-to-zoom in & out)
     el.addEventListener('touchstart', (e) => {
       if (e.touches.length === 1) {
         this.isDragging = true;
         this.prevPointerPos = { x: e.touches[0].clientX, y: e.touches[0].clientY };
-      } else if (e.touches.length === 2) {
+      } else if (e.touches.length >= 2) {
         this.isDragging = false;
         const dx = e.touches[0].clientX - e.touches[1].clientX;
         const dy = e.touches[0].clientY - e.touches[1].clientY;
         this.touchStartDist = Math.hypot(dx, dy);
       }
-    }, { passive: true });
+    }, { passive: false });
 
     el.addEventListener('touchmove', (e) => {
       if (e.touches.length === 1 && this.isDragging) {
@@ -1468,24 +1471,40 @@ class StoreScene3D {
         const dy = e.touches[0].clientY - this.prevPointerPos.y;
 
         this.camAngle += dx * 0.007;
-        this.camElevation = Math.max(0.15, Math.min(Math.PI / 2.2, this.camElevation - dy * 0.006));
+        // Invert gerakan vertikal (+ dy)
+        this.camElevation = Math.max(0.15, Math.min(Math.PI / 2.2, this.camElevation + dy * 0.006));
         this.updateCameraPosition();
 
         this.prevPointerPos = { x: e.touches[0].clientX, y: e.touches[0].clientY };
-      } else if (e.touches.length === 2) {
+      } else if (e.touches.length >= 2) {
+        if (e.cancelable) e.preventDefault();
         const dx = e.touches[0].clientX - e.touches[1].clientX;
         const dy = e.touches[0].clientY - e.touches[1].clientY;
         const dist = Math.hypot(dx, dy);
-        if (this.touchStartDist > 0) {
-          const delta = (this.touchStartDist - dist) * 0.005;
-          this.zoomLevel = Math.max(this.getMinZoom(), Math.min(this.getMaxZoom(), this.zoomLevel + delta));
+
+        if (this.touchStartDist > 0 && dist > 5) {
+          // Rasio perubahan jarak: cubit (dist mengecil) -> zoom out, renggangkan (dist membesar) -> zoom in
+          const ratio = this.touchStartDist / dist;
+          const newZoom = this.zoomLevel * ratio;
+          this.zoomLevel = Math.max(this.getMinZoom(), Math.min(this.getMaxZoom(), newZoom));
           this.updateCameraPosition();
         }
         this.touchStartDist = dist;
       }
-    }, { passive: true });
+    }, { passive: false });
 
-    el.addEventListener('touchend', () => {
+    el.addEventListener('touchend', (e) => {
+      if (e.touches.length === 1) {
+        this.isDragging = true;
+        this.prevPointerPos = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+        this.touchStartDist = 0;
+      } else if (e.touches.length === 0) {
+        this.isDragging = false;
+        this.touchStartDist = 0;
+      }
+    });
+
+    el.addEventListener('touchcancel', () => {
       this.isDragging = false;
       this.touchStartDist = 0;
     });

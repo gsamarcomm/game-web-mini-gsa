@@ -331,6 +331,14 @@ html, body {
   transform: scale(0.92);
 }
 
+.cam-divider {
+  width: 70%;
+  height: 1.5px;
+  background: rgba(0, 0, 0, 0.12);
+  margin: 3px auto;
+  border-radius: 1px;
+}
+
 /* ==========================================================================
 /* ==========================================================================
    BOTTOM CONTAINER & COMPACT CUSTOMER ORDER CARD (NON-BLOCKING)
@@ -1536,24 +1544,38 @@ html, body {
   box-shadow: 0 2px 0 #047857;
 }
 
-.reset-glow-btn {
-  background: linear-gradient(135deg, #ef4444, #dc2626) !important;
-  border-color: #fca5a5 !important;
-  box-shadow: 0 5px 0 #991b1b, 0 0 20px rgba(239, 68, 68, 0.4) !important;
-  animation: resetPulse 1.5s infinite alternate;
+.victory-btn-green {
+  background: linear-gradient(135deg, #10b981, #059669) !important;
+  color: #ffffff !important;
+  border: 2px solid #a7f3d0 !important;
+  padding: 13px 36px !important;
+  border-radius: var(--radius-full) !important;
+  font-family: var(--font-family) !important;
+  font-size: 16px !important;
+  font-weight: 900 !important;
+  cursor: pointer;
+  box-shadow: 0 5px 0 #047857, 0 0 20px rgba(16, 185, 129, 0.45) !important;
+  transition: all 0.15s ease;
+  animation: victoryGreenPulse 1.8s infinite alternate;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }
 
-@keyframes resetPulse {
-  0% { transform: scale(1); box-shadow: 0 5px 0 #991b1b, 0 0 10px rgba(239, 68, 68, 0.3); }
-  100% { transform: scale(1.03); box-shadow: 0 5px 0 #991b1b, 0 0 25px rgba(239, 68, 68, 0.6); }
+@keyframes victoryGreenPulse {
+  0% { transform: scale(1); box-shadow: 0 5px 0 #047857, 0 0 10px rgba(16, 185, 129, 0.3); }
+  100% { transform: scale(1.03); box-shadow: 0 5px 0 #047857, 0 0 24px rgba(16, 185, 129, 0.65); }
 }
 
-.victory-timer-notice {
-  text-align: center;
-  font-size: 12px;
-  color: #64748b;
-  font-weight: 700;
-  margin-top: 4px;
+.victory-btn-green:hover {
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 7px 0 #047857, 0 0 30px rgba(16, 185, 129, 0.75) !important;
+}
+
+.victory-btn-green:active {
+  transform: translateY(2px) scale(0.98);
+  box-shadow: 0 2px 0 #047857 !important;
 }
 
 /* Guide Modal Styling */

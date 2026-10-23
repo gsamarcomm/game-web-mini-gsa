@@ -44,12 +44,10 @@
           <span id="hud-cash" class="money-text">Rp3.000.000</span>
         </div>
 
-        <!-- Top Right Actions: Guide, Reset, Audio -->
+        <!-- Top Right Actions: Guide & Reset -->
         <div class="top-actions interactive">
           <button id="btn-guide-toggle" class="icon-btn guide-btn" title="Panduan Fitur & Cara Main">ℹ️</button>
           <button id="btn-manual-reset" class="icon-btn reset-btn" title="Reset Permainan">🔄</button>
-          <button id="btn-sound-toggle" class="icon-btn" title="Efek Suara (SFX)">🔊</button>
-          <button id="btn-bgm-toggle" class="icon-btn" title="Musik Toko (BGM)">🎵</button>
         </div>
       </div>
 
@@ -65,13 +63,16 @@
       </div>
     </header>
 
-    <!-- Side Floating Camera Controls (Semi-3D Interaction) -->
-    <aside class="camera-controls interactive" aria-label="Kontrol Kamera 3D">
+    <!-- Side Floating Camera & Audio Controls -->
+    <aside class="camera-controls interactive" aria-label="Kontrol Sudut, Zoom & Audio">
       <button id="btn-cam-front" class="cam-btn" title="Sudut Toko Depan">🏪</button>
       <button id="btn-cam-counter" class="cam-btn" title="Fokus Kasir">🛒</button>
       <button id="btn-cam-top" class="cam-btn" title="Sudut Atas">📐</button>
       <button id="btn-cam-zoomin" class="cam-btn" title="Perbesar Tampilan">➕</button>
       <button id="btn-cam-zoomout" class="cam-btn" title="Perkecil Tampilan">➖</button>
+      <div class="cam-divider"></div>
+      <button id="btn-sound-toggle" class="cam-btn" title="Efek Suara (SFX)">🔊</button>
+      <button id="btn-bgm-toggle" class="cam-btn" title="Musik Toko (BGM)">🎵</button>
     </aside>
 
     <!-- Bottom Group: Customer Order Card & Navigation Dock -->
@@ -215,7 +216,7 @@
             🎉 <strong>Luar Biasa!</strong> Target penjualan <strong>Rp 500.000.000</strong> telah berhasil kamu capai! Toko material GSA Indonesia kini menjadi distributor bahan bangunan modern nomor satu.
           </p>
           <p style="margin-top: 6px; font-size: 13px; color: #475569;">
-            Game telah selesai! Setelah ini, data toko akan direset agar kamu dapat memulai tantangan baru dari awal.
+            Game telah selesai! Silakan tekan tombol di bawah jika kamu ingin mereset dan memulai toko baru dari awal.
           </p>
         </div>
 
@@ -242,12 +243,9 @@
         </div>
 
         <div class="victory-actions">
-          <button id="btn-victory-reset" class="btn-primary-big reset-glow-btn">
-            🔄 Reset Sekarang & Mulai Toko Baru
+          <button id="btn-victory-reset" class="btn-primary-big victory-btn-green">
+            Oke siap
           </button>
-          <p id="victory-countdown-text" class="victory-timer-notice">
-            Otomatis reset dalam <span id="v-reset-timer">15</span> detik...
-          </p>
         </div>
       </div>
     </div>

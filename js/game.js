@@ -548,21 +548,11 @@ class StoreGame {
       document.getElementById('v-time-taken').textContent = `${Math.max(1, timeMinutes)} Menit`;
       modal.classList.add('active');
 
-      // 15 seconds countdown to automatic reset
-      let countdown = 15;
-      const timerEl = document.getElementById('v-reset-timer');
-      if (timerEl) timerEl.textContent = countdown;
-
-      if (this.victoryResetInterval) clearInterval(this.victoryResetInterval);
-      this.victoryResetInterval = setInterval(() => {
-        countdown--;
-        if (timerEl) timerEl.textContent = countdown;
-        if (countdown <= 0) {
-          clearInterval(this.victoryResetInterval);
-          this.victoryResetInterval = null;
-          this.resetGame();
-        }
-      }, 1000);
+      // Modal kemenangan aktif - reset hanya dilakukan secara manual dengan menekan tombol 'Oke siap'
+      if (this.victoryResetInterval) {
+        clearInterval(this.victoryResetInterval);
+        this.victoryResetInterval = null;
+      }
     }
   }
 
