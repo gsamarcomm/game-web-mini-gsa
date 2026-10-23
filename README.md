@@ -28,7 +28,8 @@ Semua harga dan satuan produk disesuaikan dengan spesifikasi:
 - **Jeda Kedatangan Pelanggan (1 - 5 Detik)**:
   - Setiap pelanggan datang silih berganti dengan jeda acak **1 hingga 5 detik** yang berjalan mulus di background tanpa angka hitung mundur yang mengganggu pandangan.
 - **Tampilan Ramah Layar Smartphone (Mobile-Friendly)**:
-  - Tata letak responsif penuh untuk HP: seluruh teks fasilitas/upgrade tampil utuh tanpa terpotong, tombol aksi lebar yang empuk disentuh dengan jempol, dan modal scroll yang lancar.
+  - Tata letak responsif penuh untuk HP: bar target penjualan Rp 500.000.000 kini memiliki baris mandiri khusus di bawah bar navigasi sehingga **100% bebas hambatan dan tidak terhalang** oleh tombol info (ℹ️), reset (🔄), maupun suara (🔊/🎵).
+  - Seluruh teks fasilitas/upgrade tampil utuh tanpa terpotong, tombol aksi lebar yang empuk disentuh dengan jempol, dan modal scroll yang lancar.
 - **Kemenangan & Sistem Reset Otomatis**:
   - Saat omset mencapai Rp 500.000.000, game akan selesai dan pop-up kemenangan muncul menampilkan selamat dan statistik performa toko.
   - Setelah itu, game akan direset dari awal (modal awal Rp 3.000.000) agar pemain dapat memulai tantangan baru.
@@ -39,10 +40,11 @@ Semua harga dan satuan produk disesuaikan dengan spesifikasi:
   - ✨ **Display Rak Mewah**: Menambah lampu sorot showroom gantung, pembatas emas & underglow neon pada rak material. Tip pelanggan bertambah hingga 25%.
   - 🏭 **Gudang Jumbo**: Menambah rak rangka baja industri bertingkat & palet material ekstra di gudang. Kapasitas stok bertambah +50%/level.
   - **Tampilan Berbeda Sebelum & Sesudah Upgrade**: Kartu upgrade di menu memiliki perbedaan tampilan yang mencolok antara level 0 (belum aktif), level upgraded (bingkai emas bersinar, bintang level, dan tag visual 3D aktif), dan level maksimal (shimmer emas penuh).
-- **Kamera Semi-3D Isometrik**:
+- **Kamera Semi-3D Isometrik & Zoom Ekstra Lebar di HP**:
+  - Di HP, batas zoom out diperluas hingga **3.4x** dengan penyesuaian FOV adaptif sehingga pemain HP dapat melakukan zoom out sejauh dan seluas tampilan PC untuk melihat seluruh ruko, jalan, truk, dan gudang secara utuh.
   - Drag / Geser dengan satu jari (HP) atau klik-kiri mouse (PC) untuk memutar sudut pandang toko.
   - Pinch dua jari (HP) atau scroll wheel (PC) untuk zoom in / zoom out.
-  - Tombol cepat sudut pandang: 🏪 Sudut Depan, 🛒 Fokus Kasir, 📐 Sudut Atas.
+  - Tombol cepat sudut pandang: 🏪 Sudut Depan, 🛒 Fokus Kasir, 📐 Sudut Atas, ➕ Zoom In, ➖ Zoom Out.
 - **Tema Visual Modern Orange**:
   - Tampilan visual bernuansa oranye modern yang cerah, hangat, dan enerjik pada toko 3D, seragam kasir, truk ekspedisi, papan nama, hingga seluruh antarmuka tombol dan jendela modal.
 - **Manajemen Stok Produk Terpadu**:

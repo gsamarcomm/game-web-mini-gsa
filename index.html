@@ -27,39 +27,41 @@
     
     <!-- Top Bar: Branding, Revenue Progress & Controls -->
     <header class="top-bar">
-      <!-- Brand Logo & Title -->
-      <div class="brand-badge interactive">
-        <img src="assets/logo.jpg" alt="GSA Indonesia Logo" class="brand-logo-img">
-        <div class="brand-text">
-          <h1 class="brand-title">GSA INDONESIA</h1>
-          <span class="brand-subtitle">Toko Material Modern</span>
+      <!-- Top Row: Brand, Money, Top Actions -->
+      <div class="top-bar-row">
+        <!-- Brand Logo & Title -->
+        <div class="brand-badge interactive">
+          <img src="assets/logo.jpg" alt="GSA Indonesia Logo" class="brand-logo-img">
+          <div class="brand-text">
+            <h1 class="brand-title">GSA INDONESIA</h1>
+            <span class="brand-subtitle">Toko Material Modern</span>
+          </div>
         </div>
-      </div>
 
-      <!-- Money Display & Target 500 Juta Progress -->
-      <div class="stats-center interactive">
-        <div class="money-display" id="money-display-box">
+        <!-- Money Display -->
+        <div class="money-display interactive" id="money-display-box">
           <span class="coin-icon">🪙</span>
           <span id="hud-cash" class="money-text">Rp3.000.000</span>
         </div>
 
-        <div class="target-progress-box">
-          <div class="target-labels">
-            <span class="highlight">🏆 Target: Rp500.000.000</span>
-            <span id="progress-text">Rp0 / Rp500.000.000 (0%)</span>
-          </div>
-          <div class="progress-bar-track">
-            <div id="progress-fill" class="progress-bar-fill" style="width: 0%;"></div>
-          </div>
+        <!-- Top Right Actions: Guide, Reset, Audio -->
+        <div class="top-actions interactive">
+          <button id="btn-guide-toggle" class="icon-btn guide-btn" title="Panduan Fitur & Cara Main">ℹ️</button>
+          <button id="btn-manual-reset" class="icon-btn reset-btn" title="Reset Permainan">🔄</button>
+          <button id="btn-sound-toggle" class="icon-btn" title="Efek Suara (SFX)">🔊</button>
+          <button id="btn-bgm-toggle" class="icon-btn" title="Musik Toko (BGM)">🎵</button>
         </div>
       </div>
 
-      <!-- Top Right Actions: Guide, Reset, Audio -->
-      <div class="top-actions interactive">
-        <button id="btn-guide-toggle" class="icon-btn guide-btn" title="Panduan Fitur & Cara Main">ℹ️</button>
-        <button id="btn-manual-reset" class="icon-btn reset-btn" title="Reset Permainan">🔄</button>
-        <button id="btn-sound-toggle" class="icon-btn" title="Efek Suara (SFX)">🔊</button>
-        <button id="btn-bgm-toggle" class="icon-btn" title="Musik Toko (BGM)">🎵</button>
+      <!-- Target 500 Juta Progress Bar (Dedicated Row - Never Obstructed) -->
+      <div class="target-progress-box interactive">
+        <div class="target-labels">
+          <span class="highlight">🏆 Target: Rp500.000.000</span>
+          <span id="progress-text">Rp0 / Rp500.000.000 (0%)</span>
+        </div>
+        <div class="progress-bar-track">
+          <div id="progress-fill" class="progress-bar-fill" style="width: 0%;"></div>
+        </div>
       </div>
     </header>
 

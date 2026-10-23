@@ -100,12 +100,20 @@ html, body {
    ========================================================================== */
 .top-bar {
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
+}
+
+.top-bar-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  gap: 12px;
 }
 
 .brand-badge {
@@ -149,17 +157,6 @@ html, body {
   text-transform: uppercase;
 }
 
-/* Middle Stats: Money & Target Progress */
-.stats-center {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-  flex: 1;
-  max-width: 440px;
-  margin: 0 8px;
-}
-
 .money-display {
   display: flex;
   align-items: center;
@@ -195,17 +192,19 @@ html, body {
   letter-spacing: 0.3px;
 }
 
-/* Progress towards 50 Juta */
+/* Progress towards 500 Juta (Baris mandiri, elegan dan lebar) */
 .target-progress-box {
   width: 100%;
+  max-width: 520px;
   background: var(--bg-card);
-  padding: 4px 10px;
+  padding: 5px 14px;
   border-radius: var(--radius-full);
   box-shadow: var(--shadow-sm);
   display: flex;
   flex-direction: column;
   gap: 2px;
   border: 1.5px solid #ffffff;
+  backdrop-filter: blur(8px);
 }
 
 .target-labels {
@@ -1686,66 +1685,91 @@ html, body {
     padding: 6px;
   }
   
-  /* Top Bar Header di HP */
+  /* Top Bar Header di HP (Tata letak 2 baris terpisah: Baris 1 Kontrol & Kasir, Baris 2 Target Penuh) */
   .top-bar {
-    padding: 4px 6px;
-    gap: 6px;
+    padding: 3px 6px;
+    gap: 5px;
+    width: 100%;
+  }
+
+  .top-bar-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    gap: 4px;
   }
 
   .brand-badge {
-    padding: 4px 7px 4px 5px;
+    padding: 3px 7px 3px 4px;
+    gap: 5px;
+    flex-shrink: 0;
   }
   
   .brand-logo-img {
-    width: 26px;
-    height: 26px;
+    width: 25px;
+    height: 25px;
   }
   
   .brand-title {
-    font-size: 11.5px;
+    font-size: 11px;
+    white-space: nowrap;
   }
   
   .brand-subtitle {
     display: none;
   }
 
-  .stats-center {
-    gap: 4px;
-    min-width: 0;
-  }
-  
   .money-display {
     padding: 3px 8px;
+    gap: 5px;
+    flex-shrink: 1;
   }
   
   .money-text {
-    font-size: 13px;
+    font-size: 12.5px;
+    white-space: nowrap;
   }
   
   .coin-icon {
     font-size: 14px;
   }
-  
-  .target-labels {
-    font-size: 8px;
-  }
 
-  .target-labels .highlight {
-    font-size: 8px;
-  }
-
-  .progress-bar-track {
-    height: 6px;
-  }
-  
   .top-actions {
     gap: 3px;
+    flex-shrink: 0;
   }
 
   .icon-btn {
-    width: 30px;
-    height: 30px;
+    width: 29px;
+    height: 29px;
     font-size: 13px;
+  }
+
+  /* Target Progress Box di HP: Berdiri mandiri di baris ke-2, 100% bebas hambatan dari menu aksi */
+  .target-progress-box {
+    width: 100%;
+    max-width: 100%;
+    padding: 4px 10px;
+    box-sizing: border-box;
+    margin: 0;
+  }
+
+  .target-labels {
+    font-size: 9.5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    white-space: nowrap;
+    gap: 4px;
+  }
+
+  .target-labels .highlight {
+    font-size: 9.5px;
+  }
+
+  .progress-bar-track {
+    height: 7px;
   }
   
   /* Kontrol Kamera di HP */
@@ -2075,12 +2099,22 @@ html, body {
     display: none;
   }
 
+  .top-bar-row {
+    gap: 3px;
+  }
+
+  .icon-btn {
+    width: 27px;
+    height: 27px;
+    font-size: 12px;
+  }
+
   .target-labels {
-    font-size: 7.5px;
+    font-size: 8.5px;
   }
 
   .money-text {
-    font-size: 12px;
+    font-size: 11.5px;
   }
 
   .dock-label {
@@ -2119,7 +2153,17 @@ html, body {
 /* Tablet & Desktop (> 600px) */
 @media (min-width: 601px) {
   .top-bar {
-    padding: 4px 12px;
+    padding: 6px 12px;
+    gap: 8px;
+  }
+
+  .top-bar-row {
+    gap: 16px;
+  }
+
+  .target-progress-box {
+    max-width: 500px;
+    width: 100%;
   }
 
   .modal-box {

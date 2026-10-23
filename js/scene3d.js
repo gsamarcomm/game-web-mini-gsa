@@ -52,13 +52,17 @@ class StoreScene3D {
     // 1. Scene
     this.scene = new THREE.Scene();
     this.scene.background = new THREE.Color(0xffedd5); // Warm cartoon sunset peach
-    this.scene.fog = new THREE.Fog(0xffedd5, 50, 95);
+    this.scene.fog = new THREE.Fog(0xffedd5, 75, 200);
 
     // 2. Camera: Semi-3D Isometric Perspective
     const width = this.container.clientWidth || window.innerWidth;
     const height = this.container.clientHeight || window.innerHeight;
     const aspect = width / height;
-    this.camera = new THREE.PerspectiveCamera(34, aspect, 0.1, 200);
+    const initialFov = aspect < 1.0 ? Math.min(52, Math.max(38, 34 / Math.sqrt(aspect))) : 34;
+    this.camera = new THREE.PerspectiveCamera(initialFov, aspect, 0.1, 300);
+    if (aspect < 1.0) {
+      this.zoomLevel = 1.4; // Proporsional dan nyaman di layar HP saat pertama kali buka
+    }
     this.updateCameraPosition();
 
     // 3. Renderer
@@ -1363,33 +1367,47 @@ class StoreScene3D {
     this.camera.lookAt(this.cameraTarget);
   }
 
+  getMinZoom() {
+    return 0.4;
+  }
+
+  getMaxZoom() {
+    // Di HP (layar vertikal/portrait atau lebar < 768px), izinkan zoom out hingga 3.4x
+    // agar terlihat seluas dan sejauh di PC tanpa terpotong
+    const isMobile = window.innerWidth < 768 || (this.camera && this.camera.aspect < 1.0);
+    return isMobile ? 3.4 : 2.4;
+  }
+
   setCameraPreset(presetName) {
+    const isMobile = window.innerWidth < 768 || (this.camera && this.camera.aspect < 1.0);
     if (presetName === 'front') {
       this.camAngle = Math.PI / 3.4;
       this.camElevation = Math.PI / 4.0;
-      this.zoomLevel = 1.0;
+      this.zoomLevel = isMobile ? 1.4 : 1.0;
       this.cameraTarget.set(0, 1.2, 0.5);
     } else if (presetName === 'counter') {
       this.camAngle = Math.PI / 3.2;
       this.camElevation = Math.PI / 4.8;
-      this.zoomLevel = 0.65;
+      this.zoomLevel = isMobile ? 0.9 : 0.65;
       this.cameraTarget.set(0, 1.2, 2.0);
     } else if (presetName === 'top') {
       this.camAngle = Math.PI / 3.4;
       this.camElevation = Math.PI / 2.3;
-      this.zoomLevel = 1.0;
+      this.zoomLevel = isMobile ? 1.5 : 1.0;
       this.cameraTarget.set(0, 1.0, 0);
     }
     this.updateCameraPosition();
   }
 
   zoomIn() {
-    this.zoomLevel = Math.max(0.45, this.zoomLevel - 0.15);
+    const step = window.innerWidth < 768 ? 0.2 : 0.15;
+    this.zoomLevel = Math.max(this.getMinZoom(), this.zoomLevel - step);
     this.updateCameraPosition();
   }
 
   zoomOut() {
-    this.zoomLevel = Math.min(1.6, this.zoomLevel + 0.15);
+    const step = window.innerWidth < 768 ? 0.25 : 0.15;
+    this.zoomLevel = Math.min(this.getMaxZoom(), this.zoomLevel + step);
     this.updateCameraPosition();
   }
 
@@ -1459,8 +1477,8 @@ class StoreScene3D {
         const dy = e.touches[0].clientY - e.touches[1].clientY;
         const dist = Math.hypot(dx, dy);
         if (this.touchStartDist > 0) {
-          const delta = (this.touchStartDist - dist) * 0.004;
-          this.zoomLevel = Math.max(0.45, Math.min(1.6, this.zoomLevel + delta));
+          const delta = (this.touchStartDist - dist) * 0.005;
+          this.zoomLevel = Math.max(this.getMinZoom(), Math.min(this.getMaxZoom(), this.zoomLevel + delta));
           this.updateCameraPosition();
         }
         this.touchStartDist = dist;
@@ -1474,10 +1492,19 @@ class StoreScene3D {
   }
 
   onWindowResize() {
-    if (!this.container || !this.renderer) return;
+    if (!this.container || !this.renderer || !this.camera) return;
     const width = this.container.clientWidth || window.innerWidth;
     const height = this.container.clientHeight || window.innerHeight;
-    this.camera.aspect = width / height;
+    const aspect = width / height;
+    this.camera.aspect = aspect;
+
+    // Adaptasi FOV di HP portrait agar sudut pandang horizontal tidak menyempit
+    if (aspect < 1.0) {
+      this.camera.fov = Math.min(52, Math.max(38, 34 / Math.sqrt(aspect)));
+    } else {
+      this.camera.fov = 34;
+    }
+
     this.camera.updateProjectionMatrix();
     this.renderer.setSize(width, height);
   }

@@ -668,7 +668,13 @@ class StoreGame {
     if (fillEl) fillEl.style.width = `${percent}%`;
 
     const progText = document.getElementById('progress-text');
-    if (progText) progText.textContent = `${window.formatRupiah(this.totalRevenue)} / Rp500.000.000 (${percent}%)`;
+    if (progText) {
+      if (window.innerWidth < 480) {
+        progText.textContent = `${window.formatRupiah(this.totalRevenue)} (${percent}%)`;
+      } else {
+        progText.textContent = `${window.formatRupiah(this.totalRevenue)} / Rp500.000.000 (${percent}%)`;
+      }
+    }
 
     // Low stock alert badge on Stock Button
     let hasLowStock = false;
