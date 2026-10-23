@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>GSA Indonesia - Game Simulasi Toko Bangunan Semi 3D</title>
+  <meta name="description" content="Game simulasi toko bangunan GSA Indonesia 3D kartun yang seru dan mengasyikkan! Jual ACP, WPC, SPC Flooring, Flexibel Stone dan Sealant menuju omset Rp 500.000.000.">
+  <link rel="icon" type="image/jpeg" href="assets/logo.jpg">
+
+  <!-- Google Fonts: Fredoka & Nunito -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700;800;900&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
+
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- 3D WebGL Canvas Layer -->
+  <div id="canvas-container">
+    <canvas id="canvas-3d"></canvas>
+  </div>
+
+  <!-- UI Overlay Layer -->
+  <div id="ui-layer">
+    
+    <!-- Top Bar: Branding, Revenue Progress & Controls -->
+    <header class="top-bar">
+      <!-- Brand Logo & Title -->
+      <div class="brand-badge interactive">
+        <img src="assets/logo.jpg" alt="GSA Indonesia Logo" class="brand-logo-img">
+        <div class="brand-text">
+          <h1 class="brand-title">GSA INDONESIA</h1>
+          <span class="brand-subtitle">Toko Material Modern</span>
+        </div>
+      </div>
+
+      <!-- Money Display & Target 500 Juta Progress -->
+      <div class="stats-center interactive">
+        <div class="money-display" id="money-display-box">
+          <span class="coin-icon">🪙</span>
+          <span id="hud-cash" class="money-text">Rp3.000.000</span>
+        </div>
+
+        <div class="target-progress-box">
+          <div class="target-labels">
+            <span class="highlight">🏆 Target: Rp500.000.000</span>
+            <span id="progress-text">Rp0 / Rp500.000.000 (0%)</span>
+          </div>
+          <div class="progress-bar-track">
+            <div id="progress-fill" class="progress-bar-fill" style="width: 0%;"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Top Right Actions: Guide, Reset, Audio -->
+      <div class="top-actions interactive">
+        <button id="btn-guide-toggle" class="icon-btn guide-btn" title="Panduan Fitur & Cara Main">ℹ️</button>
+        <button id="btn-manual-reset" class="icon-btn reset-btn" title="Reset Permainan">🔄</button>
+        <button id="btn-sound-toggle" class="icon-btn" title="Efek Suara (SFX)">🔊</button>
+        <button id="btn-bgm-toggle" class="icon-btn" title="Musik Toko (BGM)">🎵</button>
+      </div>
+    </header>
+
+    <!-- Side Floating Camera Controls (Semi-3D Interaction) -->
+    <aside class="camera-controls interactive" aria-label="Kontrol Kamera 3D">
+      <button id="btn-cam-front" class="cam-btn" title="Sudut Toko Depan">🏪</button>
+      <button id="btn-cam-counter" class="cam-btn" title="Fokus Kasir">🛒</button>
+      <button id="btn-cam-top" class="cam-btn" title="Sudut Atas">📐</button>
+      <button id="btn-cam-zoomin" class="cam-btn" title="Perbesar Tampilan">➕</button>
+      <button id="btn-cam-zoomout" class="cam-btn" title="Perkecil Tampilan">➖</button>
+    </aside>
+
+    <!-- Bottom Group: Customer Order Card & Navigation Dock -->
+    <div class="bottom-container">
+      <!-- Active Customer Order Card (Anchored to bottom above dock) -->
+      <section class="customer-queue-container" id="customer-queue-container">
+        <div class="no-customer-card interactive">
+          <span class="pulse-dot"></span>
+          <span>Menunggu pelanggan mampir ke GSA Indonesia...</span>
+        </div>
+      </section>
+
+      <!-- Bottom Navigation Dock -->
+      <nav class="bottom-dock interactive">
+        <button id="dock-stock" class="dock-btn primary" title="Kelola Stok Produk">
+          <span id="stock-alert-badge" class="badge-alert" style="display: none;">!</span>
+          <span class="dock-icon">📦</span>
+          <span class="dock-label">Stok Produk</span>
+        </button>
+
+        <button id="dock-upgrade" class="dock-btn accent" title="Upgrade Fasilitas Toko">
+          <span class="dock-icon">⚡</span>
+          <span class="dock-label">Upgrade Toko</span>
+        </button>
+
+        <button id="dock-restock-all" class="dock-btn success" title="Restok Cepat Semua Bahan">
+          <span class="dock-icon">🚚</span>
+          <span class="dock-label">Restok Cepat</span>
+        </button>
+
+        <button id="dock-catalog" class="dock-btn" title="Katalog & Info Material">
+          <span class="dock-icon">📖</span>
+          <span class="dock-label">Info Produk</span>
+        </button>
+      </nav>
+    </div>
+
+  </div>
+
+  <!-- Floating Toast Notifications -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <!-- MODAL 1: GUDANG & STOK PRODUK -->
+  <div id="stock-modal" class="modal-overlay">
+    <div class="modal-box">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <span class="modal-title-icon">📦</span>
+          <h3 class="modal-title">Gudang & Stok Produk GSA</h3>
+        </div>
+        <button class="modal-close-btn">&times;</button>
+      </div>
+
+      <div class="modal-body" id="stock-modal-list">
+        <!-- Rendered dynamically by game.js -->
+      </div>
+
+      <div class="modal-footer">
+        <button id="btn-modal-restock-all" class="serve-action-btn quick-restock-btn">
+          <span>🚚</span> Restok Semua yang Kurang
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 2: UPGRADE TOKO -->
+  <div id="upgrade-modal" class="modal-overlay">
+    <div class="modal-box">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <span class="modal-title-icon">⚡</span>
+          <h3 class="modal-title">Upgrade Fasilitas Toko GSA</h3>
+        </div>
+        <button class="modal-close-btn">&times;</button>
+      </div>
+
+      <div class="modal-body" id="upgrade-modal-list">
+        <!-- Rendered dynamically by game.js -->
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 3: KATALOG PRODUK GSA INDONESIA -->
+  <div id="catalog-modal" class="modal-overlay">
+    <div class="modal-box">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <span class="modal-title-icon">📖</span>
+          <h3 class="modal-title">Daftar Produk Unggulan GSA</h3>
+        </div>
+        <button class="modal-close-btn">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="showcase-banner">
+          <img src="assets/showcase.jpg" alt="Showcase Produk GSA Indonesia">
+        </div>
+
+        <div class="catalog-item-list">
+          <div class="catalog-item" style="border-left-color: #2563eb;">
+            <h4><span>🏢 ACP (Aluminium Composite Panel)</span> <span>Rp200.000 / lembar</span></h4>
+            <p>Lembaran komposit aluminium tahan cuaca, anti karat, dan anti rayap. Sangat populer untuk fasad gedung bertingkat, ruko, serta papan reklame modern.</p>
+          </div>
+
+          <div class="catalog-item" style="border-left-color: #b45309;">
+            <h4><span>🪵 WPC (Wood Plastic Composite)</span> <span>Rp90.000 / lembar</span></h4>
+            <p>Kisi-kisi dinding komposit kayu estetik. Tahan air, tidak lapuk, anti rayap, memberikan nuansa hangat alami pada interior ruang tamu, kafe, dan kamar tidur.</p>
+          </div>
+
+          <div class="catalog-item" style="border-left-color: #8b5cf6;">
+            <h4><span>📦 SPC Flooring</span> <span>Rp600.000 / box</span></h4>
+            <p>Lantai vinyl batu SPC ultra-mewah dengan sistem click interlock. 100% tahan air, anti gores, dan tidak memuai. Pilihan utama untuk hunian mewah dan hotel.</p>
+          </div>
+
+          <div class="catalog-item" style="border-left-color: #64748b;">
+            <h4><span>🪨 Flexibel Stone</span> <span>Rp300.000 / lembar</span></h4>
+            <p>Lembaran batu alam ultra-tipis elastis yang dapat ditekuk. Sangat praktis dipasang pada pilar bulat, dinding melengkung, maupun backdrop TV bernuansa batu alam mewah.</p>
+          </div>
+
+          <div class="catalog-item" style="border-left-color: #06b6d4;">
+            <h4><span>🧴 Silicone Sealant</span> <span>Rp20.000 / botol</span></h4>
+            <p>Lem silikon perekat kedap air elastis kualitas tinggi. Esensial untuk mengisi celah sambungan ACP, kaca, kusen aluminium, dan batu alam agar tidak bocor.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 4: VICTORY / GAME FINISHED CELEBRATION (TARGET 500 JUTA) -->
+  <div id="victory-modal" class="modal-overlay victory-modal">
+    <div class="modal-box">
+      <div class="victory-header-decor">
+        <div class="victory-trophy">🏆</div>
+        <h2 class="victory-title">SELAMAT! KAMU MENCAPAI TARGET!</h2>
+        <p class="victory-subtitle">Toko GSA Indonesia Sukses Menembus Omset Rp 500.000.000!</p>
+      </div>
+
+      <div class="modal-body">
+        <div class="victory-banner-congrats">
+          <p>
+            🎉 <strong>Luar Biasa!</strong> Target penjualan <strong>Rp 500.000.000</strong> telah berhasil kamu capai! Toko material GSA Indonesia kini menjadi distributor bahan bangunan modern nomor satu.
+          </p>
+          <p style="margin-top: 6px; font-size: 13px; color: #475569;">
+            Game telah selesai! Setelah ini, data toko akan direset agar kamu dapat memulai tantangan baru dari awal.
+          </p>
+        </div>
+
+        <div class="victory-stats-grid">
+          <div class="v-stat-card">
+            <span class="v-stat-val" id="v-final-revenue">Rp500.000.000</span>
+            <span class="v-stat-lbl">Total Omset Penjualan</span>
+          </div>
+
+          <div class="v-stat-card">
+            <span class="v-stat-val" id="v-total-customers">0 Orang</span>
+            <span class="v-stat-lbl">Pelanggan Terlayani</span>
+          </div>
+
+          <div class="v-stat-card">
+            <span class="v-stat-val" id="v-time-taken">0 Menit</span>
+            <span class="v-stat-lbl">Waktu Pencapaian</span>
+          </div>
+
+          <div class="v-stat-card">
+            <span class="v-stat-val">⭐ Distributor Sultan</span>
+            <span class="v-stat-lbl">Status Toko</span>
+          </div>
+        </div>
+
+        <div class="victory-actions">
+          <button id="btn-victory-reset" class="btn-primary-big reset-glow-btn">
+            🔄 Reset Sekarang & Mulai Toko Baru
+          </button>
+          <p id="victory-countdown-text" class="victory-timer-notice">
+            Otomatis reset dalam <span id="v-reset-timer">15</span> detik...
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 5: PANDUAN LENGKAP FITUR TOKO GSA INDONESIA -->
+  <div id="guide-modal" class="modal-overlay">
+    <div class="modal-box guide-modal-box">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <span class="modal-title-icon">ℹ️</span>
+          <h3 class="modal-title">Panduan Lengkap Fitur Toko GSA</h3>
+        </div>
+        <button class="modal-close-btn">&times;</button>
+      </div>
+
+      <div class="modal-body guide-modal-body">
+        <div class="guide-feature-card">
+          <div class="guide-feature-icon">🎯</div>
+          <div class="guide-feature-content">
+            <h4>Target Penjualan: Rp 500.000.000</h4>
+            <p>Tujuan utama permainan adalah mengumpulkan omset penjualan akumulatif hingga mencapai <strong>Rp 500.000.000</strong>. Pantau progress bar di bagian atas layar.</p>
+          </div>
+        </div>
+
+        <div class="guide-feature-card">
+          <div class="guide-feature-icon">⏱️</div>
+          <div class="guide-feature-content">
+            <h4>Jeda Kedatangan Pelanggan (1 - 5 Detik)</h4>
+            <p>Setiap pelanggan datang silih berganti dengan jeda acak <strong>1 hingga 5 detik</strong>. Kamu memiliki waktu untuk restok produk sebelum pembeli berikutnya masuk.</p>
+          </div>
+        </div>
+
+        <div class="guide-feature-card">
+          <div class="guide-feature-icon">📦</div>
+          <div class="guide-feature-content">
+            <h4>Manajemen Stok & Pemesanan Produk</h4>
+            <p>Jual 5 material unggulan GSA (ACP, WPC, SPC Flooring, Flexibel Stone, Sealant). Buka menu <strong>Stok Produk</strong> untuk memeriksa ketersediaan dan mengisi ulang stok toko.</p>
+          </div>
+        </div>
+
+        <div class="guide-feature-card">
+          <div class="guide-feature-icon">⚡</div>
+          <div class="guide-feature-content">
+            <h4>Upgrade Toko & Tampilan Visual 3D Berubah</h4>
+            <p>Setiap upgrade memberikan tampilan visual baru yang membedakan toko sebelum dan sesudah upgrade:</p>
+            <ul class="guide-sublist">
+              <li>👑 <strong>Kontraktor VIP</strong>: Membuka karpet merah VIP & plakat emas di kasir (+profit margin).</li>
+              <li>🚚 <strong>Truk Kilat</strong>: Mengubah truk menjadi truk kontainer express berlampu LED & turbo exhaust (+diskon kulakan).</li>
+              <li>📢 <strong>Iklan Medsos</strong>: Menambah spanduk promo di trotoar & papan neon marquee di atap toko (pembeli datang lebih cepat & sering borong).</li>
+              <li>✨ <strong>Display Rak Mewah</strong>: Mengubah lantai menjadi marmer emas, menambah lampu sorot showroom & pembatas emas (+tip pelanggan).</li>
+              <li>🏭 <strong>Gudang Jumbo</strong>: Menambah rak bertingkat & tumpukan palet material cadangan (+kapasitas gudang).</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="guide-feature-card">
+          <div class="guide-feature-icon">🏆</div>
+          <div class="guide-feature-content">
+            <h4>Kemenangan & Sistem Reset Otomatis</h4>
+            <p>Saat target Rp 500.000.000 tercapai, pop-up window kemenangan akan muncul menyatakan kamu berhasil mencapai target. Setelah itu, game akan direset dari awal sehingga kamu bisa bermain kembali.</p>
+          </div>
+        </div>
+
+        <div class="guide-feature-card">
+          <div class="guide-feature-icon">🎮</div>
+          <div class="guide-feature-content">
+            <h4>Kontrol Kamera 3D & Shortcut Keyboard</h4>
+            <p><strong>Putar Sudut</strong>: Geser/Drag mouse atau swipe HP. <strong>Zoom</strong>: Scroll mouse atau pinch HP. <strong>Shortcut PC</strong>: Spasi (Kemas & Jual), 1-5 (Restok Produk 1-5), R (Restok Semua).</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="serve-action-btn modal-close-btn-footer" style="width: 100%;">
+          <span>👍</span> Siap, Saya Mengerti!
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Libraries: Local Three.js & Confetti with CDN fallback -->
+  <script src="lib/three.min.js"></script>
+  <script>
+    if (typeof THREE === 'undefined') {
+      document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"><\/script>');
+    }
+  </script>
+  <script src="lib/confetti.browser.min.js"></script>
+  <script>
+    if (typeof confetti === 'undefined') {
+      document.write('<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"><\/script>');
+    }
+  </script>
+
+  <!-- Game Scripts -->
+  <script src="js/audio.js"></script>
+  <script src="js/products.js"></script>
+  <script src="js/scene3d.js"></script>
+  <script src="js/game.js"></script>
+
+  <!-- Initialize Application -->
+  <script>
+    window.addEventListener('DOMContentLoaded', () => {
+      // 1. Initialize 3D Scene
+      const scene3d = new StoreScene3D('canvas-container');
+
+      // 2. Initialize Game Engine
+      const game = new StoreGame();
+      game.init(scene3d);
+
+      // Expose to window for debugging or manual testing if needed
+      window.gsaGame = game;
+      window.gsaScene = scene3d;
+    });
+  </script>
+</body>
+</html>
